@@ -1,4 +1,4 @@
-package com.example.googlemaps
+package com.example.googlemaps.view
 
 import android.Manifest
 import android.content.SharedPreferences
@@ -8,11 +8,13 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.googlemaps.R
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -140,6 +142,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapLong
         mMap.addMarker(MarkerOptions().position(p0))
         selectedLongitude=p0.latitude
         selectedLongitude=p0.longitude
+    }
+    fun save(view: View){
+
+    }
+    fun delete(view:View){
+
     }
 }
 

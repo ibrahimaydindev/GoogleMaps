@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -45,4 +46,12 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    def room_version="2.3.0"
+    implementation ("andorid.room:room-runtime:$room_version")
+    annotationProcessor "androidx.room:roomcompiler:$room_version"
+
+
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation "androidx.room:room-rxjava3:$room_version"
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
 }
