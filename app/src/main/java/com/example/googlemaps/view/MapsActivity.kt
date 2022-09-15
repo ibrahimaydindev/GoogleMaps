@@ -45,7 +45,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     var selectedLongitude: Double? = null
     private lateinit var db: PlaceDatabase
     private lateinit var placeDao: PlaceDao
-    private lateinit var compositeDisposable: CompositeDisposable
+    //verileri kullan at
+     private val compositeDisposable= CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,8 +173,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         }
 
     }
-    fun handleResponse(){
+    private fun handleResponse(){
         val intent= Intent(this,MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
     }
 
@@ -185,6 +187,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         compositeDisposable.clear()
         super.onDestroy()
     }
+
+
 }
 
 
