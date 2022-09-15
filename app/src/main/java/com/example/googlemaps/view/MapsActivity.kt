@@ -22,8 +22,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.example.googlemaps.databinding.ActivityMapsBinding
 import com.example.googlemaps.model.Place
-import com.example.googlemaps.model.PlaceDao
-import com.example.googlemaps.model.PlaceDatabase
+import com.example.googlemaps.database.PlaceDao
+import com.example.googlemaps.database.PlaceDatabase
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -50,37 +50,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        registerLauncher()
-
+        permission()
         selectedLatitude = 0.0
         selectedLongitude = 0.0
-
         binding.saveButton.isEnabled = false
-
         sharedPreferences =
             getSharedPreferences("com.example.googlemaps", MODE_PRIVATE)
         trackBoolean = false
-
-
         db = Room.databaseBuilder(
             applicationContext,
             PlaceDatabase::class.java, "Places"
-        ) //.allowMainThreadQueries()
+        )
             .build()
-
         placeDao = db.placeDao()
-
     }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -102,7 +90,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                         sharedPreferences.edit().putBoolean("trackBoolean", true).apply()
                     }
                 }
-
             }
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -140,17 +127,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 }
             }
         } else {
-
             mMap.clear()
             placeFromMain = intent.getSerializableExtra("place") as? Place
             placeFromMain?.let {
                 val latLng = LatLng(it.latitude, it.longitude)
-
                 mMap.addMarker(MarkerOptions().position(latLng).title(it.name))
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-
                 binding.editText.setText(it.name)
-                binding.editText.isFocusable=false
+                binding.editText.isFocusable = false
                 binding.saveButton.visibility = View.GONE
                 binding.deleteButton.visibility = View.VISIBLE
 
@@ -174,8 +158,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     }
 
     fun save(view: View?) {
-
-        //placeDao.insert(place).subscribeOn(Schedulers.io()).subscribe();
         val place = Place(
             binding.editText.text.toString(),
             selectedLatitude!!, selectedLongitude!!
@@ -196,11 +178,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::handleResponse)
             )
-
         }
     }
 
-    private fun registerLauncher() {
+    private fun permission() {
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
                 if (result) {
@@ -230,8 +211,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                         }
                     }
                 } else {
-                    //permission denied
-                    Toast.makeText(this@MapsActivity, "Permission needed!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MapsActivity, "Permission needed!", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
     }
