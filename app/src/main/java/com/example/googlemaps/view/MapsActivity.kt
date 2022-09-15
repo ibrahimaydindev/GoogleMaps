@@ -14,17 +14,22 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.googlemaps.R
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.example.googlemaps.databinding.ActivityMapsBinding
+import com.example.googlemaps.model.Place
+import com.example.googlemaps.model.PlaceDao
+import com.example.googlemaps.model.PlaceDatabase
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapLongClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -33,8 +38,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapLong
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var sharedPreferences: SharedPreferences
     var trackBoolean: Boolean? = null
-    var selectedLatitude:Double?=null
-    var selectedLongitude:Double?=null
+    var selectedLatitude: Double? = null
+    var selectedLongitude: Double? = null
+    private lateinit var db: PlaceDatabase
+    private lateinit var placeDao: PlaceDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +52,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapLong
         locationPermission()
         sharedPreferences = this.getSharedPreferences("com.example.googlemaps", MODE_PRIVATE)
         trackBoolean = false
-        selectedLongitude=0.0
-        selectedLatitude=0.0
+        selectedLongitude = 0.0
+        selectedLatitude = 0.0
+
+        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places").build()
+        placeDao = db.placeDao()
 
     }
 
@@ -140,13 +150,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapLong
     override fun onMapLongClick(p0: LatLng) {
         mMap.clear()
         mMap.addMarker(MarkerOptions().position(p0))
-        selectedLongitude=p0.latitude
-        selectedLongitude=p0.longitude
+        selectedLongitude = p0.latitude
+        selectedLongitude = p0.longitude
     }
-    fun save(view: View){
+
+    fun save(view: View) {
+        if (selectedLatitude != null && selectedLongitude != null) {
+            val place=Place(binding.editText.text.toString(), selectedLatitude!!, selectedLongitude!!)
+            placeDao.save(place)
+        }
 
     }
-    fun delete(view:View){
+
+    fun delete(view: View) {
 
     }
 }
