@@ -14,5 +14,5 @@ data class Place(
     val longitude:Double)
 {
     @PrimaryKey(autoGenerate = true)
-    val id =0
+    var id =0
 }

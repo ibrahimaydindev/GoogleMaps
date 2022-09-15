@@ -1,6 +1,7 @@
 package com.example.googlemaps.view
 
 import android.Manifest
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
@@ -15,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.example.googlemaps.R
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,6 +28,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
@@ -42,6 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     var selectedLongitude: Double? = null
     private lateinit var db: PlaceDatabase
     private lateinit var placeDao: PlaceDao
+    private lateinit var compositeDisposable: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +59,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         selectedLongitude = 0.0
         selectedLatitude = 0.0
 
-        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places").build()
+        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places")
+            // thredleri kitlememe .allowMainThreadQueries()
+            .build()
         placeDao = db.placeDao()
 
     }
@@ -157,13 +163,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     fun save(view: View) {
         if (selectedLatitude != null && selectedLongitude != null) {
             val place=Place(binding.editText.text.toString(), selectedLatitude!!, selectedLongitude!!)
-            placeDao.save(place)
+            compositeDisposable.add(
+                placeDao.save(place)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::handleResponse)
+            )
         }
 
+    }
+    fun handleResponse(){
+        val intent= Intent(this,MainActivity::class.java)
+        startActivity(intent)
     }
 
     fun delete(view: View) {
 
+    }
+
+    override fun onDestroy() {
+        compositeDisposable.clear()
+        super.onDestroy()
     }
 }
 
