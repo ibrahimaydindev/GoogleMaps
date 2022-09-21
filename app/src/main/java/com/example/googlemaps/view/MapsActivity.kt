@@ -73,10 +73,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMapLongClickListener(this)
-
         val intent = intent
         val info = intent.getStringExtra("info")
-
         if (info == "new") {
             binding.saveButton.visibility = View.VISIBLE
             binding.deleteButton.visibility = View.GONE
@@ -137,9 +135,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 binding.editText.isFocusable = false
                 binding.saveButton.visibility = View.GONE
                 binding.deleteButton.visibility = View.VISIBLE
-
             }
-
         }
     }
 
@@ -221,7 +217,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         super.onDestroy()
         mDisposable.clear()
     }
-
 }
 
 
