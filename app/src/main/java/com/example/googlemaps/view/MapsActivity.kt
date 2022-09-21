@@ -181,7 +181,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
                 if (result) {
-                    //permission granted
                     if (ContextCompat.checkSelfPermission(
                             this@MapsActivity,
                             Manifest.permission.ACCESS_FINE_LOCATION

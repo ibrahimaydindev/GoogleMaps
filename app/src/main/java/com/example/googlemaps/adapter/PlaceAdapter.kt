@@ -12,12 +12,10 @@ class PlaceAdapter(var placeList: List<Place>) : RecyclerView.Adapter<PlaceAdapt
    inner class PlaceHolder(val recyclerRowBinding: RecyclerRowBinding) : RecyclerView.ViewHolder(recyclerRowBinding.root) {
 
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceHolder {
         val recyclerRowBinding: RecyclerRowBinding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PlaceHolder(recyclerRowBinding)
     }
-
     override fun onBindViewHolder(holder: PlaceHolder, position: Int) {
         holder.recyclerRowBinding.textView.setText(placeList[position].name)
         holder.itemView.setOnClickListener {
@@ -27,10 +25,7 @@ class PlaceAdapter(var placeList: List<Place>) : RecyclerView.Adapter<PlaceAdapt
             holder.itemView.context.startActivity(intent)
         }
     }
-
     override fun getItemCount(): Int {
         return placeList.size
     }
-
-
 }
